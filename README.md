@@ -5,7 +5,9 @@
 # Soenneker.Blazor.LogJson
 ### A small Blazor interop library that logs JSON (like HTTP requests/responses) within the browser
 
-Supports log levels, grouping, and all in a nice readable format
+Supports log levels, grouping, and all in a nice readable format:
+
+![](https://github.com/soenneker/soenneker.blazor.logjson/raw/main/READMEimg.png)
 
 ## Installation
 
