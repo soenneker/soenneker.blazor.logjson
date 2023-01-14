@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <!--TODO: Bug, apparently multi targeting is required for static assets to be included...-->
         <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
         <Nullable>enable</Nullable>
         <Platforms>AnyCPU</Platforms>
@@ -14,9 +13,10 @@
         <Version Condition="'$(BUILD_VERSION)' != ''">$(BUILD_VERSION)</Version>
         <AssemblyName>Soenneker.Blazor.LogJson</AssemblyName>
         <PackageId>Soenneker.Blazor.LogJson</PackageId>
-        <PackageTags>Blazor JSON Logging Interop</PackageTags>
+        <PackageTags>blazor json logging interop c# .net dotnet</PackageTags>
         <Copyright>Copyright © 2023 Jake Soenneker</Copyright>
         <Authors>Jake Soenneker</Authors>
+        <Company>soenneker.com</Company>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <IncludeSymbols>true</IncludeSymbols>
@@ -26,13 +26,16 @@
         <PackageProjectUrl>https://github.com/soenneker/soenneker.blazor.logjson</PackageProjectUrl>
         <RepositoryUrl>https://github.com/soenneker/soenneker.blazor.logjson</RepositoryUrl>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <LangVersion>latest</LangVersion>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
     
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\LICENSE" Pack="true" PackagePath="\" />
+        <None Include="..\icon.png" Pack="true" PackagePath="\"/>
 
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     </ItemGroup>
