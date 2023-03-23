@@ -1,5 +1,5 @@
 [![](https://img.shields.io/nuget/v/Soenneker.Blazor.LogJson.svg?style=for-the-badge)](https://www.nuget.org/packages/Soenneker.Blazor.LogJson/)
-[![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.blazor.logjson/main.yml?style=for-the-badge)](https://github.com/soenneker/soenneker.blazor.logjson/actions/workflows/main.yml)
+[![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.blazor.logjson/publish.yml?style=for-the-badge)](https://github.com/soenneker/soenneker.blazor.logjson/actions/workflows/publish.yml)
 [![](https://img.shields.io/nuget/dt/Soenneker.Blazor.LogJson.svg?style=for-the-badge)](https://www.nuget.org/packages/Soenneker.Blazor.LogJson/)
 
 # Soenneker.Blazor.LogJson
