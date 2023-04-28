@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <Description>A small Blazor interop library that logs JSON (like HTTP requests/responses) within the browser</Description>
+        <Description>A Blazor interop library that logs JSON (like HTTP requests/responses) within the browser</Description>
         <Version Condition="'$(BUILD_VERSION)' == ''">1.0.0</Version>
         <Version Condition="'$(BUILD_VERSION)' != ''">$(BUILD_VERSION)</Version>
         <AssemblyName>Soenneker.Blazor.LogJson</AssemblyName>
@@ -35,10 +35,9 @@
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="..\LICENSE" Pack="true" PackagePath="\" />
-        <None Include="..\icon.png" Pack="true" PackagePath="\"/>
+        <None Include="..\icon.png" Pack="true" PackagePath="\" />
 
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-        <PackageReference Include="Microsoft.AspNetCore.Components" Version="7.0.5" />
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
     </ItemGroup>
 </Project>

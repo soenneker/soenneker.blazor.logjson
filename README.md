@@ -3,7 +3,7 @@
 [![](https://img.shields.io/nuget/dt/Soenneker.Blazor.LogJson.svg?style=for-the-badge)](https://www.nuget.org/packages/Soenneker.Blazor.LogJson/)
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Blazor.LogJson
-### A small Blazor interop library that logs JSON (like HTTP requests/responses) within the browser
+### A Blazor interop library that logs JSON (like HTTP requests/responses) within the browser
 
 Supports log levels, grouping, and all in a nice readable format:
 
