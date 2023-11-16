@@ -9,7 +9,7 @@
 
     <PropertyGroup>
         <Description>A Blazor interop library that logs JSON (like HTTP requests/responses) within the browser</Description>
-        <Version Condition="'$(BUILD_VERSION)' == ''">2.0.0</Version>
+        <Version Condition="'$(BUILD_VERSION)' == ''">2.1.0</Version>
         <Version Condition="'$(BUILD_VERSION)' != ''">$(BUILD_VERSION)</Version>
         <AssemblyName>Soenneker.Blazor.LogJson</AssemblyName>
         <PackageId>Soenneker.Blazor.LogJson</PackageId>
