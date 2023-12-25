@@ -12,7 +12,7 @@ Supports log levels, grouping, and all in a nice readable format:
 ## Installation
 
 ```
-Install-Package Soenneker.Blazor.LogJson
+dotnet add package Soenneker.Blazor.LogJson
 ```
 
 ## Usage
