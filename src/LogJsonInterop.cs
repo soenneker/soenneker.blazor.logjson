@@ -20,20 +20,27 @@ public class LogJsonInterop : ILogJsonInterop
         return _jsRuntime.InvokeVoidAsync("logJson", jsonString, group, logLevel);
     }
 
-    public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null)
+    public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null)
     {
         string? contentString = null;
 
         if (httpContent != null)
             contentString = await httpContent.ReadAsStringAsync();
 
-        await LogJson(contentString, $"Request: {requestUri}");
+        var groupString = "Request: ";
+
+        if (httpMethod != null)
+            groupString += httpMethod.ToString();
+
+        groupString += requestUri;
+
+        await LogJson(contentString, groupString);
     }
 
     public async ValueTask LogResponse(HttpResponseMessage response)
     {
         var contentString = await response.Content.ReadAsStringAsync();
-
+        
         await LogJson(contentString, $"Response: {response.RequestMessage?.RequestUri} ({response.StatusCode})");
     }
 }
