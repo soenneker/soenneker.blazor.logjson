@@ -30,7 +30,7 @@ public class LogJsonInterop : ILogJsonInterop
         var groupString = "Request: ";
 
         if (httpMethod != null)
-            groupString += httpMethod.ToString();
+            groupString += $"{httpMethod} ";
 
         groupString += requestUri;
 
@@ -41,6 +41,15 @@ public class LogJsonInterop : ILogJsonInterop
     {
         var contentString = await response.Content.ReadAsStringAsync();
         
-        await LogJson(contentString, $"Response: {response.RequestMessage?.RequestUri} ({response.StatusCode})");
+        var groupString = "Response: ";
+
+        if (response.RequestMessage != null)
+        {
+            groupString += $"{response.RequestMessage?.Method} {response.RequestMessage?.RequestUri} ";
+        }
+
+        groupString += $"({response.StatusCode})";
+
+        await LogJson(contentString, groupString);
     }
 }
