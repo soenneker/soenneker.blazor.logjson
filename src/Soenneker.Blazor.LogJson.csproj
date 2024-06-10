@@ -38,5 +38,9 @@
         <None Include="..\icon.png" Pack="true" PackagePath="\" />
 
         <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.6" />
+
+        <PackageReference Include="Soenneker.Extensions.Task" Version="2.1.55" />
+
+        <PackageReference Include="Soenneker.Extensions.ValueTask" Version="2.1.41" />
     </ItemGroup>
 </Project>

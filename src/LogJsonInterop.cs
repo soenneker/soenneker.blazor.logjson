@@ -1,7 +1,10 @@
 ﻿using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Soenneker.Blazor.LogJson.Abstract;
+using Soenneker.Extensions.Task;
+using Soenneker.Extensions.ValueTask;
 
 namespace Soenneker.Blazor.LogJson;
 
@@ -25,31 +28,34 @@ public class LogJsonInterop : ILogJsonInterop
         string? contentString = null;
 
         if (httpContent != null)
-            contentString = await httpContent.ReadAsStringAsync();
+            contentString = await httpContent.ReadAsStringAsync().NoSync();
 
-        var groupString = "Request: ";
+        var groupStringBuilder = new StringBuilder("Request: ");
 
         if (httpMethod != null)
-            groupString += $"{httpMethod} ";
+            groupStringBuilder.Append(httpMethod).Append(' ');
 
-        groupString += requestUri;
+        groupStringBuilder.Append(requestUri);
 
-        await LogJson(contentString, groupString);
+        await LogJson(contentString, groupStringBuilder.ToString()).NoSync();
     }
 
     public async ValueTask LogResponse(HttpResponseMessage response)
     {
-        var contentString = await response.Content.ReadAsStringAsync();
-        
-        var groupString = "Response: ";
+        var contentString = await response.Content.ReadAsStringAsync().NoSync();
+
+        var groupStringBuilder = new StringBuilder("Response: ");
 
         if (response.RequestMessage != null)
         {
-            groupString += $"{response.RequestMessage?.Method} {response.RequestMessage?.RequestUri} ";
+            groupStringBuilder.Append(response.RequestMessage.Method)
+                .Append(' ')
+                .Append(response.RequestMessage.RequestUri)
+                .Append(' ');
         }
 
-        groupString += $"({response.StatusCode})";
+        groupStringBuilder.Append('(').Append(response.StatusCode).Append(')');
 
-        await LogJson(contentString, groupString);
+        await LogJson(contentString, groupStringBuilder.ToString()).NoSync();
     }
 }
