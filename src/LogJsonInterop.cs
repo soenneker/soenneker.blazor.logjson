@@ -1,8 +1,10 @@
 ﻿using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Soenneker.Blazor.LogJson.Abstract;
+using Soenneker.Blazor.Utils.ModuleImport.Abstract;
 using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
 
@@ -12,23 +14,39 @@ namespace Soenneker.Blazor.LogJson;
 public class LogJsonInterop : ILogJsonInterop
 {
     private readonly IJSRuntime _jsRuntime;
+    private readonly IModuleImportUtil _moduleImportUtil;
+    private bool _initialized;
 
-    public LogJsonInterop(IJSRuntime jSRuntime)
+    public LogJsonInterop(IJSRuntime jSRuntime, IModuleImportUtil moduleImportUtil)
     {
         _jsRuntime = jSRuntime;
+        _moduleImportUtil = moduleImportUtil;
     }
 
-    public ValueTask LogJson(string? jsonString, string group, string logLevel = "log")
+    private async ValueTask EnsureInitialized(CancellationToken cancellationToken = default)
     {
-        return _jsRuntime.InvokeVoidAsync("logJson", jsonString, group, logLevel);
+        if (_initialized)
+            return;
+
+        _initialized = true;
+
+        await _moduleImportUtil.Import("Soenneker.Blazor.LogJson/js/logjsoninterop.js", cancellationToken);
+        await _moduleImportUtil.WaitUntilLoaded("Soenneker.Blazor.LogJson/js/logjsoninterop.js", cancellationToken);
     }
 
-    public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null)
+    public async ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default)
+    {
+        await EnsureInitialized(cancellationToken);
+
+        await _jsRuntime.InvokeVoidAsync("JsonLogger.logJson", cancellationToken, jsonString, group, logLevel);
+    }
+
+    public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null, CancellationToken cancellationToken = default)
     {
         string? contentString = null;
 
         if (httpContent != null)
-            contentString = await httpContent.ReadAsStringAsync().NoSync();
+            contentString = await httpContent.ReadAsStringAsync(cancellationToken).NoSync();
 
         var groupStringBuilder = new StringBuilder("Request: ");
 
@@ -37,12 +55,12 @@ public class LogJsonInterop : ILogJsonInterop
 
         groupStringBuilder.Append(requestUri);
 
-        await LogJson(contentString, groupStringBuilder.ToString()).NoSync();
+        await LogJson(contentString, groupStringBuilder.ToString(), cancellationToken: cancellationToken).NoSync();
     }
 
-    public async ValueTask LogResponse(HttpResponseMessage response)
+    public async ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        var contentString = await response.Content.ReadAsStringAsync().NoSync();
+        var contentString = await response.Content.ReadAsStringAsync(cancellationToken).NoSync();
 
         var groupStringBuilder = new StringBuilder("Response: ");
 
@@ -56,6 +74,6 @@ public class LogJsonInterop : ILogJsonInterop
 
         groupStringBuilder.Append('(').Append(response.StatusCode).Append(')');
 
-        await LogJson(contentString, groupStringBuilder.ToString()).NoSync();
+        await LogJson(contentString, groupStringBuilder.ToString(), cancellationToken: cancellationToken).NoSync();
     }
 }

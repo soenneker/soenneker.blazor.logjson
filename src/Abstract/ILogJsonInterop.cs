@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Soenneker.Blazor.LogJson.Abstract;
@@ -14,7 +15,8 @@ public interface ILogJsonInterop
     /// <param name="jsonString">The JSON string to log. Can be null.</param>
     /// <param name="group">The group under which the log is categorized.</param>
     /// <param name="logLevel">The log level (e.g., "log", "info", "error"). Default is "log".</param>
-    ValueTask LogJson(string? jsonString, string group, string logLevel = "log");
+    /// <param name="cancellationToken"></param>
+    ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs an HTTP request with its URI, content, and method.
@@ -22,11 +24,13 @@ public interface ILogJsonInterop
     /// <param name="requestUri">The URI of the HTTP request.</param>
     /// <param name="httpContent">The content of the HTTP request. Can be null.</param>
     /// <param name="httpMethod">The method of the HTTP request (e.g., GET, POST). Can be null.</param>
-    ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null);
+    /// <param name="cancellationToken"></param>
+    ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs an HTTP response.
     /// </summary>
     /// <param name="response">The HTTP response to log.</param>
-    ValueTask LogResponse(HttpResponseMessage response);
+    /// <param name="cancellationToken"></param>
+    ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default);
 }

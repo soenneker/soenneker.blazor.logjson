@@ -15,15 +15,7 @@ Supports log levels, grouping, and all in a nice readable format:
 dotnet add package Soenneker.Blazor.LogJson
 ```
 
-## Usage
-
-1. Insert the script in `wwwroot/index.html` at the bottom of your `<body>`
-
-```html
-<script src="_content/Soenneker.Blazor.LogJson/logjson.js"></script>
-```
-
-2. Register the interop within DI (`Program.cs`)
+1. Register the interop within DI (`Program.cs`)
 
 ```csharp
 public static async Task Main(string[] args)
@@ -33,16 +25,14 @@ public static async Task Main(string[] args)
 }
 ```
 
-3. Inject `ILogJsonInterop` within pages/components where you make `HttpClient` calls
-
+2. Inject `ILogJsonInterop` within pages/components
 
 ```csharp
 @using Soenneker.Blazor.LogJson.Abstract
 @inject ILogJsonInterop LogJsonInterop
 ```
 
-
-### Simply logging some JSON 
+### Logging some JSON 
 ```csharp
 var json = "{ 'this-is', 'someJson' }"
 await LogJsonInterop.LogJson(json);
@@ -59,5 +49,4 @@ await LogJsonInterop.LogRequest($"https://google.com", content);
 ```csharp
 HttpResponseMessage response = await client.PostAsync(requestUri, content);
 await LogJsonInterop.LogResponse(response);
-
 ```
