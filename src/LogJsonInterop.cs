@@ -76,4 +76,9 @@ public class LogJsonInterop : ILogJsonInterop
 
         await LogJson(contentString, groupStringBuilder.ToString(), cancellationToken: cancellationToken).NoSync();
     }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _moduleImportUtil.DisposeModule("Soenneker.Blazor.LogJson/js/logjsoninterop.js");
+    }
 }

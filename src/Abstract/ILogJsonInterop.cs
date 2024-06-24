@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace Soenneker.Blazor.LogJson.Abstract;
 /// <summary>
 /// A Blazor interop library that logs JSON (like HTTP requests/responses) within the browser
 /// </summary>
-public interface ILogJsonInterop
+public interface ILogJsonInterop : IAsyncDisposable
 {
     /// <summary>
     /// Logs a JSON string with a specified group and log level.
