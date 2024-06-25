@@ -40,4 +40,4 @@
     }
 }
 
-window.JsonLogger = new JsonLogger();
+window.JsonLogger = JsonLogger;
