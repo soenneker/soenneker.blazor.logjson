@@ -31,7 +31,7 @@ public class LogJsonInterop : ILogJsonInterop
         _initialized = true;
 
         await _moduleImportUtil.Import("Soenneker.Blazor.LogJson/js/logjsoninterop.js", cancellationToken);
-        await _moduleImportUtil.WaitUntilLoaded("Soenneker.Blazor.LogJson/js/logjsoninterop.js", cancellationToken);
+        await _moduleImportUtil.WaitUntilLoadedAndAvailable("Soenneker.Blazor.LogJson/js/logjsoninterop.js", "JsonLogger", 100, cancellationToken);
     }
 
     public async ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default)
