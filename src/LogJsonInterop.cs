@@ -23,9 +23,12 @@ public class LogJsonInterop : ILogJsonInterop
         _jsRuntime = jSRuntime;
         _moduleImportUtil = moduleImportUtil;
 
-        _scriptInitializer = new AsyncSingleton<object>(async () => {
-            await _moduleImportUtil.Import("Soenneker.Blazor.LogJson/logjsoninterop.js");
-            await _moduleImportUtil.WaitUntilLoadedAndAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "JsonLogger");
+        _scriptInitializer = new AsyncSingleton<object>(async objects => {
+
+            var cancellationToken = (CancellationToken)objects[0];
+
+            await _moduleImportUtil.Import("Soenneker.Blazor.LogJson/logjsoninterop.js", cancellationToken);
+            await _moduleImportUtil.WaitUntilLoadedAndAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "JsonLogger", 100, cancellationToken);
 
             return new object();
         });
@@ -33,7 +36,7 @@ public class LogJsonInterop : ILogJsonInterop
 
     public async ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default)
     {
-        await _scriptInitializer.Get().NoSync();
+        await _scriptInitializer.Get(cancellationToken).NoSync();
 
         await _jsRuntime.InvokeVoidAsync("JsonLogger.logJson", cancellationToken, jsonString, group, logLevel);
     }

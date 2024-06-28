@@ -4,24 +4,30 @@
 @inject ILogger<Index> Logger
 @inject ILogJsonInterop LogJsonInterop
 
-<img src="https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png" />
+<img src="https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png"/>
 <h1>Soenneker.Blazor.LogJson demo</h1>
 <p>This page demonstrates some of the uses of the LogJson interop.</p>
 
 
-<button @onclick="Log" >Log</button>
-<NavLink href="/second" >Navigate to second page</NavLink>
+<button @onclick="Log">Log</button>
+<NavLink href="/second">Navigate to second page</NavLink>
 
 @code{
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await LogJsonInterop.LogJson("{rendered:{}}", "group");
+        {
+            for (var x = -1; x < 5; x++)
+            {
+                await LogJsonInterop.LogJson($"{x}", "group");
+            }
+        }
     }
 
     private async Task Log()
     {
         await LogJsonInterop.LogJson("{newLog:{}}", "group");
     }
+
 }
