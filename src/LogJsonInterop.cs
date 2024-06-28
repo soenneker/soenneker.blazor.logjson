@@ -7,6 +7,7 @@ using Soenneker.Blazor.LogJson.Abstract;
 using Soenneker.Blazor.Utils.ModuleImport.Abstract;
 using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
+using Soenneker.Utils.AsyncSingleton;
 
 namespace Soenneker.Blazor.LogJson;
 
@@ -15,28 +16,24 @@ public class LogJsonInterop : ILogJsonInterop
 {
     private readonly IJSRuntime _jsRuntime;
     private readonly IModuleImportUtil _moduleImportUtil;
-    private bool _initialized;
+    private readonly AsyncSingleton<object> _scriptInitializer;
 
     public LogJsonInterop(IJSRuntime jSRuntime, IModuleImportUtil moduleImportUtil)
     {
         _jsRuntime = jSRuntime;
         _moduleImportUtil = moduleImportUtil;
-    }
 
-    private async ValueTask EnsureInitialized(CancellationToken cancellationToken = default)
-    {
-        if (_initialized)
-            return;
+        _scriptInitializer = new AsyncSingleton<object>(async () => {
+            await _moduleImportUtil.Import("Soenneker.Blazor.LogJson/logjsoninterop.js");
+            await _moduleImportUtil.WaitUntilLoadedAndAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "JsonLogger");
 
-        _initialized = true;
-
-        await _moduleImportUtil.Import("Soenneker.Blazor.LogJson/js/logjsoninterop.js", cancellationToken);
-        await _moduleImportUtil.WaitUntilLoadedAndAvailable("Soenneker.Blazor.LogJson/js/logjsoninterop.js", "JsonLogger", 100, cancellationToken);
+            return new object();
+        });
     }
 
     public async ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default)
     {
-        await EnsureInitialized(cancellationToken);
+        await _scriptInitializer.Get().NoSync();
 
         await _jsRuntime.InvokeVoidAsync("JsonLogger.logJson", cancellationToken, jsonString, group, logLevel);
     }
@@ -77,8 +74,8 @@ public class LogJsonInterop : ILogJsonInterop
         await LogJson(contentString, groupStringBuilder.ToString(), cancellationToken: cancellationToken).NoSync();
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
-        await _moduleImportUtil.DisposeModule("Soenneker.Blazor.LogJson/js/logjsoninterop.js");
+        return _moduleImportUtil.DisposeModule("Soenneker.Blazor.LogJson/logjsoninterop.js");
     }
 }
