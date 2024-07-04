@@ -22,6 +22,11 @@ public interface ILogJsonInterop : IAsyncDisposable
     /// <summary>
     /// Logs an HTTP request with its URI, content, and method.
     /// </summary>
+    ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Logs an HTTP request with its URI, content, and method.
+    /// </summary>
     /// <param name="requestUri">The URI of the HTTP request.</param>
     /// <param name="httpContent">The content of the HTTP request. Can be null.</param>
     /// <param name="httpMethod">The method of the HTTP request (e.g., GET, POST). Can be null.</param>

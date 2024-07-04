@@ -23,12 +23,10 @@ public class LogJsonInterop : ILogJsonInterop
         _jsRuntime = jSRuntime;
         _resourceLoader = resourceLoader;
 
-        _initializer = new AsyncSingleton<object>(async objects => {
+        _initializer = new AsyncSingleton<object>(async (token, _) =>
+        {
+            await _resourceLoader.ImportModuleAndWaitUntilAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "LogJsonInterop", 100, token);
 
-            var cancellationToken = (CancellationToken)objects[0];
-
-            await _resourceLoader.ImportModuleAndWaitUntilAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "JsonLogger", 100, cancellationToken);
-         
             return new object();
         });
     }
@@ -37,7 +35,12 @@ public class LogJsonInterop : ILogJsonInterop
     {
         await _initializer.Get(cancellationToken).NoSync();
 
-        await _jsRuntime.InvokeVoidAsync("JsonLogger.logJson", cancellationToken, jsonString, group, logLevel);
+        await _jsRuntime.InvokeVoidAsync("LogJsonInterop.logJson", cancellationToken, jsonString, group, logLevel);
+    }
+
+    public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
+    {
+        return LogRequest(request.RequestUri?.ToString() ?? "Uri not set on request object", request.Content, request.Method, cancellationToken);
     }
 
     public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null, CancellationToken cancellationToken = default)

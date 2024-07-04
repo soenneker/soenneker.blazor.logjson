@@ -1,4 +1,4 @@
-﻿export class JsonLogger {
+﻿export class LogJsonInterop {
     static logJson(jsonString, group, level = 'log') {
         let obj;
 
@@ -40,4 +40,4 @@
     }
 }
 
-window.JsonLogger = JsonLogger;
+window.LogJsonInterop = LogJsonInterop;
