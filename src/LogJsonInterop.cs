@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -79,8 +80,12 @@ public class LogJsonInterop : ILogJsonInterop
         await LogJson(contentString, groupStringBuilder.ToString(), cancellationToken: cancellationToken).NoSync();
     }
 
-    public ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
-        return _resourceLoader.DisposeModule("Soenneker.Blazor.LogJson/logjsoninterop.js");
+        GC.SuppressFinalize(this);
+
+        await _resourceLoader.DisposeModule("Soenneker.Blazor.LogJson/logjsoninterop.js").NoSync();
+
+        await _initializer.DisposeAsync().NoSync();
     }
 }
