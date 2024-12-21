@@ -36,7 +36,7 @@ public class LogJsonInterop : ILogJsonInterop
     {
         await _initializer.Get(cancellationToken).NoSync();
 
-        await _jsRuntime.InvokeVoidAsync("LogJsonInterop.logJson", cancellationToken, jsonString, group, logLevel);
+        await _jsRuntime.InvokeVoidAsync("LogJsonInterop.logJson", cancellationToken, jsonString, group, logLevel).NoSync();
     }
 
     public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
