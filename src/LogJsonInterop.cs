@@ -26,7 +26,7 @@ public class LogJsonInterop : ILogJsonInterop
 
         _initializer = new AsyncSingleton<object>(async (token, _) =>
         {
-            await _resourceLoader.ImportModuleAndWaitUntilAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "LogJsonInterop", 100, token);
+            await _resourceLoader.ImportModuleAndWaitUntilAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "LogJsonInterop", 100, token).NoSync();
 
             return new object();
         });
