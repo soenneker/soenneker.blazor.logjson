@@ -21,7 +21,7 @@ dotnet add package Soenneker.Blazor.LogJson
 public static async Task Main(string[] args)
 {
     ...
-    builder.Services.AddLogJson();
+    builder.Services.AddLogJsonInteropAsScoped();
 }
 ```
 

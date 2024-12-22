@@ -10,7 +10,7 @@ namespace Soenneker.Blazor.LogJson.Registrars;
 /// </summary>
 public static class LogJsonRegistrar
 {
-    public static IServiceCollection AddLogJsonAsScoped(this IServiceCollection services)
+    public static IServiceCollection AddLogJsonInteropAsScoped(this IServiceCollection services)
     {
         services.AddResourceLoaderAsScoped();
         services.TryAddScoped<ILogJsonInterop, LogJsonInterop>();

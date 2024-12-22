@@ -42,7 +42,7 @@ public class Program
                 .AddBootstrap5Providers()
                 .AddFontAwesomeIcons();
 
-            builder.Services.AddLogJson();
+            builder.Services.AddLogJsonInteropAsScoped();
 
             WebAssemblyHost host = builder.Build();
 
