@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Soenneker.Blazor.LogJson.Registrars;
@@ -26,7 +25,7 @@ public class Fixture : UnitFixture
             builder.AddSerilog(dispose: true);
         });
 
-        IConfiguration config = TestUtil.BuildConfig();
+        var config = TestUtil.BuildConfig();
         services.AddSingleton(config);
 
         services.AddLogJsonInteropAsScoped();

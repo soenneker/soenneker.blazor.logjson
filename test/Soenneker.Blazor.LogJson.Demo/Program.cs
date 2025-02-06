@@ -44,7 +44,7 @@ public class Program
 
             builder.Services.AddLogJsonInteropAsScoped();
 
-            WebAssemblyHost host = builder.Build();
+            var host = builder.Build();
 
             var jsRuntime = (IJSRuntime)host.Services.GetService(typeof(IJSRuntime))!;
 

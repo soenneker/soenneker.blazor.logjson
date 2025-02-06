@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using Soenneker.Blazor.LogJson.Abstract;
 using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
@@ -15,18 +15,24 @@ namespace Soenneker.Blazor.LogJson;
 ///<inheritdoc cref="ILogJsonInterop"/>
 public class LogJsonInterop : ILogJsonInterop
 {
+    private const string ModulePath = "Soenneker.Blazor.LogJson/logjsoninterop.js";
+    private const string ModuleIdentifier = "LogJsonInterop";
+
     private readonly IJSRuntime _jsRuntime;
     private readonly IResourceLoader _resourceLoader;
     private readonly AsyncSingleton<object> _initializer;
+    private readonly ILogger<LogJsonInterop> _logger;
 
-    public LogJsonInterop(IJSRuntime jSRuntime, IResourceLoader resourceLoader)
+    public LogJsonInterop(IJSRuntime jSRuntime, IResourceLoader resourceLoader, ILogger<LogJsonInterop> logger)
     {
         _jsRuntime = jSRuntime;
         _resourceLoader = resourceLoader;
+        _logger = logger;
 
         _initializer = new AsyncSingleton<object>(async (token, _) =>
         {
-            await _resourceLoader.ImportModuleAndWaitUntilAvailable("Soenneker.Blazor.LogJson/logjsoninterop.js", "LogJsonInterop", 100, token).NoSync();
+            await _resourceLoader.ImportModuleAndWaitUntilAvailable(ModulePath, ModuleIdentifier, 100, token)
+                                 .NoSync();
 
             return new object();
         });
@@ -34,9 +40,11 @@ public class LogJsonInterop : ILogJsonInterop
 
     public async ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default)
     {
-        await _initializer.Get(cancellationToken).NoSync();
+        await _initializer.Get(cancellationToken)
+                          .NoSync();
 
-        await _jsRuntime.InvokeVoidAsync("LogJsonInterop.logJson", cancellationToken, jsonString, group, logLevel).NoSync();
+        await _jsRuntime.InvokeVoidAsync("LogJsonInterop.logJson", cancellationToken, jsonString, group, logLevel)
+                        .NoSync();
     }
 
     public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
@@ -46,46 +54,40 @@ public class LogJsonInterop : ILogJsonInterop
 
     public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null, CancellationToken cancellationToken = default)
     {
-        string? contentString = null;
+        var contentString = httpContent is not null
+            ? await httpContent.ReadAsStringAsync(cancellationToken)
+                               .NoSync()
+            : null;
 
-        if (httpContent != null)
-            contentString = await httpContent.ReadAsStringAsync(cancellationToken).NoSync();
+        var group = httpMethod is not null ? $"Request: {httpMethod} {requestUri}" : $"Request: {requestUri}";
 
-        var groupStringBuilder = new StringBuilder("Request: ");
-
-        if (httpMethod != null)
-            groupStringBuilder.Append(httpMethod).Append(' ');
-
-        groupStringBuilder.Append(requestUri);
-
-        await LogJson(contentString, groupStringBuilder.ToString(), cancellationToken: cancellationToken).NoSync();
+        await LogJson(contentString, group, cancellationToken: cancellationToken)
+            .NoSync();
     }
 
     public async ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        var contentString = await response.Content.ReadAsStringAsync(cancellationToken).NoSync();
+        var contentString = await response.Content.ReadAsStringAsync(cancellationToken)
+                                          .NoSync();
 
-        var groupStringBuilder = new StringBuilder("Response: ");
+        var group = response.RequestMessage is not null
+            ? $"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} ({response.StatusCode})"
+            : $"Response: ({response.StatusCode})";
 
-        if (response.RequestMessage != null)
-        {
-            groupStringBuilder.Append(response.RequestMessage.Method)
-                .Append(' ')
-                .Append(response.RequestMessage.RequestUri)
-                .Append(' ');
-        }
-
-        groupStringBuilder.Append('(').Append(response.StatusCode).Append(')');
-
-        await LogJson(contentString, groupStringBuilder.ToString(), cancellationToken: cancellationToken).NoSync();
+        await LogJson(contentString, group, cancellationToken: cancellationToken)
+            .NoSync();
     }
 
     public async ValueTask DisposeAsync()
     {
+        _logger.LogDebug("Disposing LogJsonInterop.");
+
+        await _resourceLoader.DisposeModule("Soenneker.Blazor.LogJson/logjsoninterop.js")
+                             .NoSync();
+
+        await _initializer.DisposeAsync()
+                          .NoSync();
+
         GC.SuppressFinalize(this);
-
-        await _resourceLoader.DisposeModule("Soenneker.Blazor.LogJson/logjsoninterop.js").NoSync();
-
-        await _initializer.DisposeAsync().NoSync();
     }
 }
