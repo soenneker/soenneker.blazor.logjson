@@ -20,7 +20,7 @@ public class LogJsonInterop : ILogJsonInterop
 
     private readonly IJSRuntime _jsRuntime;
     private readonly IResourceLoader _resourceLoader;
-    private readonly AsyncSingleton<object> _initializer;
+    private readonly AsyncSingleton _initializer;
     private readonly ILogger<LogJsonInterop> _logger;
 
     public LogJsonInterop(IJSRuntime jSRuntime, IResourceLoader resourceLoader, ILogger<LogJsonInterop> logger)
@@ -29,7 +29,7 @@ public class LogJsonInterop : ILogJsonInterop
         _resourceLoader = resourceLoader;
         _logger = logger;
 
-        _initializer = new AsyncSingleton<object>(async (token, _) =>
+        _initializer = new AsyncSingleton(async (token, _) =>
         {
             await _resourceLoader.ImportModuleAndWaitUntilAvailable(ModulePath, ModuleIdentifier, 100, token)
                                  .NoSync();
@@ -40,7 +40,7 @@ public class LogJsonInterop : ILogJsonInterop
 
     public async ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default)
     {
-        await _initializer.Get(cancellationToken)
+        await _initializer.Init(cancellationToken)
                           .NoSync();
 
         await _jsRuntime.InvokeVoidAsync("LogJsonInterop.logJson", cancellationToken, jsonString, group, logLevel)
