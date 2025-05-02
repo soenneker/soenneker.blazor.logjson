@@ -12,8 +12,7 @@ public static class LogJsonRegistrar
 {
     public static IServiceCollection AddLogJsonInteropAsScoped(this IServiceCollection services)
     {
-        services.AddResourceLoaderAsScoped()
-                .TryAddScoped<ILogJsonInterop, LogJsonInterop>();
+        services.AddResourceLoaderAsScoped().TryAddScoped<ILogJsonInterop, LogJsonInterop>();
 
         return services;
     }
