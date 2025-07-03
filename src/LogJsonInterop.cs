@@ -12,7 +12,7 @@ using Soenneker.Utils.AsyncSingleton;
 namespace Soenneker.Blazor.LogJson;
 
 ///<inheritdoc cref="ILogJsonInterop"/>
-public class LogJsonInterop : ILogJsonInterop
+public sealed class LogJsonInterop : ILogJsonInterop
 {
     private const string ModulePath = "Soenneker.Blazor.LogJson/js/logjsoninterop.js";
     private const string ModuleIdentifier = "LogJsonInterop";
@@ -72,7 +72,5 @@ public class LogJsonInterop : ILogJsonInterop
         await _resourceLoader.DisposeModule("Soenneker.Blazor.LogJson/logjsoninterop.js").NoSync();
 
         await _initializer.DisposeAsync().NoSync();
-
-        GC.SuppressFinalize(this);
     }
 }
