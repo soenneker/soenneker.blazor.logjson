@@ -10,14 +10,7 @@ namespace Soenneker.Blazor.LogJson.Abstract;
 /// </summary>
 public interface ILogJsonInterop : IAsyncDisposable
 {
-    /// <summary>
-    /// Logs a JSON string with a specified group and log level.
-    /// </summary>
-    /// <param name="jsonString">The JSON string to log. Can be null.</param>
-    /// <param name="group">The group under which the log is categorized.</param>
-    /// <param name="logLevel">The log level (e.g., "log", "info", "error"). Default is "log".</param>
-    /// <param name="cancellationToken"></param>
-    ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default);
+    ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs an HTTP request with its URI, content, and method.

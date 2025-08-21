@@ -1,13 +1,13 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using Soenneker.Blazor.LogJson.Abstract;
 using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
 using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
 using Soenneker.Utils.AsyncSingleton;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Soenneker.Blazor.LogJson;
 
@@ -34,11 +34,29 @@ public sealed class LogJsonInterop : ILogJsonInterop
         });
     }
 
-    public async ValueTask LogJson(string? jsonString, string group, string logLevel = "log", CancellationToken cancellationToken = default)
+    public ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default)
+    {
+        if (value is null)
+            return LogObjectInternal(null, group, level, cancellationToken);
+
+        switch (value)
+        {
+            case string s:
+                return LogObjectInternal(s, group, level, cancellationToken);
+            case JsonElement je:
+                return LogObjectInternal(je.GetRawText(), group, level, cancellationToken);
+            case JsonDocument jd:
+                return LogObjectInternal(jd.RootElement.GetRawText(), group, level, cancellationToken);
+            default:
+                return LogObjectInternal(value, group, level, cancellationToken);
+        }
+    }
+
+    private async ValueTask LogObjectInternal(object? value, string group, string logLevel, CancellationToken cancellationToken)
     {
         await _initializer.Init(cancellationToken).NoSync();
-
-        await _jsRuntime.InvokeVoidAsync("LogJsonInterop.logJson", cancellationToken, jsonString, group, logLevel).NoSync();
+        // NOTE: We pass the object, not a string. The JS above handles non-strings cleanly.
+        await _jsRuntime.InvokeVoidAsync($"{ModuleIdentifier}.logJson", cancellationToken, value, group, logLevel).NoSync();
     }
 
     public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
@@ -53,7 +71,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
         var group = httpMethod is not null ? $"Request: {httpMethod} {requestUri}" : $"Request: {requestUri}";
 
-        await LogJson(contentString, group, cancellationToken: cancellationToken).NoSync();
+        await LogObjectInternal(contentString, group, "log", cancellationToken: cancellationToken).NoSync();
     }
 
     public async ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default)
@@ -64,13 +82,12 @@ public sealed class LogJsonInterop : ILogJsonInterop
             ? $"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} ({response.StatusCode})"
             : $"Response: ({response.StatusCode})";
 
-        await LogJson(contentString, group, cancellationToken: cancellationToken).NoSync();
+        await LogObjectInternal(contentString, group, "log", cancellationToken: cancellationToken).NoSync();
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _resourceLoader.DisposeModule("Soenneker.Blazor.LogJson/logjsoninterop.js").NoSync();
-
+        await _resourceLoader.DisposeModule(ModulePath).NoSync();
         await _initializer.DisposeAsync().NoSync();
     }
 }

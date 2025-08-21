@@ -1,7 +1,30 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="main">
-    <div class="content px-4">
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="navbar-brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                LogJson Demo
+            </a>
+            <ul class="navbar-nav">
+                <li><NavLink href="/" class="nav-link" Match="NavLinkMatch.All">Home</NavLink></li>
+                <li><NavLink href="/second" class="nav-link">Advanced</NavLink></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="content">
         @Body
-    </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="footer-container">
+            <p class="text-muted">© 2024 LogJson Demo. Built with Blazor WebAssembly.</p>
+        </div>
+    </footer>
 </div>

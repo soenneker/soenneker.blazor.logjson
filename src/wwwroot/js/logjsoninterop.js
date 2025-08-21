@@ -1,42 +1,42 @@
 ﻿export class LogJsonInterop {
-    static logJson(jsonString, group, level = 'log') {
-        let obj;
+    static #levels = Object.freeze({
+        trace: console.trace.bind(console),
+        info: console.info.bind(console),
+        warn: console.warn.bind(console),
+        error: console.error.bind(console),
+        debug: console.debug.bind(console),
+        log: console.log.bind(console)
+    });
 
-        if (jsonString) {
+    static #looksLikeJson(str) {
+        for (let i = 0; i < str.length; i++) {
+            const c = str.charCodeAt(i);
+            if (c <= 32)
+                continue; // whitespace
+            return c === 123 /* '{' */ || c === 91 /* '[' */;
+        }
+        return false;
+    }
+
+    static logJson(input, group, level = 'log') {
+        let obj = input;
+
+        if (typeof input === "string" && LogJsonInterop.#looksLikeJson(input)) {
             try {
-                obj = JSON.parse(jsonString);
-            } catch (e) {
-                obj = jsonString; // Use the original string if parsing fails
+                obj = JSON.parse(input);
+            } catch {
+                // fall back to original string
             }
         }
 
-        console.group(group);
+        if (group)
+            console.group(group);
 
-        if (obj) {
-            switch (level) {
-                case "trace":
-                    console.trace(obj);
-                    break;
-                case "info":
-                    console.info(obj);
-                    break;
-                case "warn":
-                    console.warn(obj);
-                    break;
-                case "error":
-                    console.error(obj);
-                    break;
-                case "debug":
-                    console.debug(obj);
-                    break;
-                case "log":
-                default:
-                    console.log(obj);
-                    break;
-            }
-        }
+        const logger = LogJsonInterop.#levels[level] || LogJsonInterop.#levels.log;
+        logger(obj);
 
-        console.groupEnd();
+        if (group)
+            console.groupEnd();
     }
 }
 

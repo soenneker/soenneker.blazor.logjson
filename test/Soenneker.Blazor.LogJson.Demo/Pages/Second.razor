@@ -1,27 +1,325 @@
 ﻿@page "/second"
+@using System
+@using System.Threading
+@using System.Text.Json
 @using Microsoft.Extensions.Logging
 @using Soenneker.Blazor.LogJson.Abstract
 @inject ILogger<Index> Logger
 @inject ILogJsonInterop LogJsonInterop
+@implements IDisposable
 
-<img src="https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png" />
-<h1>Soenneker.Blazor.LogJson demo</h1>
-<p>This page demonstrates some of the uses of the LogJson interop.</p>
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Advanced Logging Demo</h1>
+        <p class="lead">Explore advanced logging scenarios with grouping, structured data, and real-time updates</p>
+        <div class="status-indicator status-info">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Advanced logging features enabled
+        </div>
+    </div>
+</div>
 
+<div class="grid grid-cols-1 gap-8 mt-8">
+    <!-- Grouped Logging Demo -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Grouped Logging</h2>
+            <p class="card-subtitle">Demonstrate console group functionality for organized logging</p>
+        </div>
+        <div class="card-body">
+            <p>This demo shows how to use grouped logging to organize related log entries in the browser console. Each group can contain multiple log entries and can be collapsed for better organization.</p>
+            
+            <div class="demo-actions">
+                <button class="btn btn-primary" @onclick="LogGroupedData" disabled="@isLogging">
+                    @if (isLogging)
+                    {
+                        <div class="loading"></div>
+                    }
+                    else
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 11H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 15H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M9 7H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3 5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5Z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    }
+                    @(isLogging ? "Logging..." : "Create Logged Group")
+                </button>
+                
+                @if (groupLogCount > 0)
+                {
+                    <div class="logged-data">
+                        <h4>Group Logging Activity:</h4>
+                        <div class="status-indicator status-success">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            Created @groupLogCount grouped log entries
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 
-<button @onclick="Log">Log</button>
-<NavLink href="/second">Navigate to second page</NavLink>
+    <!-- Real-time Logging Demo -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Real-time Logging</h2>
+            <p class="card-subtitle">Simulate real-time data logging with timestamps</p>
+        </div>
+        <div class="card-body">
+            <p>This demo simulates real-time data logging with timestamps and structured data. Perfect for monitoring applications, debugging, and tracking user interactions.</p>
+            
+            <div class="demo-actions">
+                <button class="btn btn-secondary" @onclick="StartRealTimeLogging" disabled="@isRealTimeActive">
+                    @if (isRealTimeActive)
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="6" y="6" width="12" height="12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        @("Stop Real-time Logging")
+                    }
+                    else
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 5V19L19 12L8 5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        @("Start Real-time Logging")
+                    }
+                </button>
+                
+                @if (realTimeLogCount > 0)
+                {
+                    <div class="logged-data">
+                        <h4>Real-time Log Count:</h4>
+                        <div class="status-indicator status-info">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            @realTimeLogCount entries logged
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Structured Data Demo -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Structured Data Logging</h2>
+            <p class="card-subtitle">Log complex structured data with nested objects and arrays</p>
+        </div>
+        <div class="card-body">
+            <p>Demonstrate logging of complex structured data including nested objects, arrays, and various data types. This shows the full power of JSON logging for debugging and monitoring.</p>
+            
+            <div class="demo-actions">
+                <button class="btn btn-outline" @onclick="LogStructuredData" disabled="@isLogging">
+                    @if (isLogging)
+                    {
+                        <div class="loading"></div>
+                    }
+                    else
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    }
+                    @(isLogging ? "Logging..." : "Log Structured Data")
+                </button>
+                
+                @if (lastStructuredData != null)
+                {
+                    <div class="logged-data">
+                        <h4>Last Structured Data:</h4>
+                        <div class="code-block">
+                            @lastStructuredData
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Card -->
+    <div class="card">
+        <div class="card-body">
+            <h3>Back to Basics</h3>
+            <p>Return to the main demo page to see the fundamental logging capabilities.</p>
+            <NavLink href="/" class="btn btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Back to Home
+            </NavLink>
+        </div>
+    </div>
+</div>
 
 @code {
+    private bool isLogging = false;
+    private bool isRealTimeActive = false;
+    private int groupLogCount = 0;
+    private int realTimeLogCount = 0;
+    private string? lastStructuredData;
+    private Timer? realTimeTimer;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await LogJsonInterop.LogJson("{rendered:{}}", "group");
+        {
+            await LogJsonInterop.Log("{\"page\":\"advanced\",\"loaded\":true,\"timestamp\":\"" + DateTime.UtcNow.ToString("O") + "\"}", "page-lifecycle");
+        }
     }
 
-    private async Task Log()
+    private async Task LogGroupedData()
     {
-        await LogJsonInterop.LogJson("{newLog:{}}", "group");
+        isLogging = true;
+        StateHasChanged();
+
+        try
+        {
+            // Create a group of related log entries
+            await LogJsonInterop.Log("{\"action\":\"group_start\",\"name\":\"User Session Data\"}", "group");
+            
+            await LogJsonInterop.Log("{\"type\":\"user_info\",\"id\":\"user_123\",\"name\":\"John Doe\",\"email\":\"john@example.com\"}", "group");
+            await LogJsonInterop.Log("{\"type\":\"session_info\",\"session_id\":\"sess_456\",\"start_time\":\"" + DateTime.UtcNow.ToString("O") + "\",\"duration\":\"00:15:30\"}", "group");
+            await LogJsonInterop.Log("{\"type\":\"activity_log\",\"actions\":[\"page_view\",\"button_click\",\"form_submit\"],\"count\":3}", "group");
+            
+            await LogJsonInterop.Log("{\"action\":\"group_end\"}", "group");
+            
+            groupLogCount += 4; // Count the group entries
+        }
+        finally
+        {
+            isLogging = false;
+            StateHasChanged();
+        }
+    }
+
+    private Task StartRealTimeLogging()
+    {
+        if (isRealTimeActive)
+        {
+            // Stop real-time logging
+            realTimeTimer?.Dispose();
+            realTimeTimer = null;
+            isRealTimeActive = false;
+            StateHasChanged();
+        }
+        else
+        {
+            // Start real-time logging
+            isRealTimeActive = true;
+            realTimeLogCount = 0;
+            StateHasChanged();
+
+            realTimeTimer = new Timer(async _ =>
+            {
+                await InvokeAsync(async () =>
+                {
+                    var logData = new
+                    {
+                        timestamp = DateTime.UtcNow.ToString("O"),
+                        event_type = "heartbeat",
+                        sequence = realTimeLogCount + 1,
+                        data = new
+                        {
+                            cpu_usage = Random.Shared.Next(10, 90),
+                            memory_usage = Random.Shared.Next(20, 80),
+                            active_connections = Random.Shared.Next(5, 25)
+                        }
+                    };
+
+                    await LogJsonInterop.Log(JsonSerializer.Serialize(logData), "realtime");
+                    realTimeLogCount++;
+                    StateHasChanged();
+                });
+            }, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    private async Task LogStructuredData()
+    {
+        isLogging = true;
+        StateHasChanged();
+
+        try
+        {
+            var complexData = new
+            {
+                application = new
+                {
+                    name = "LogJson Demo",
+                    version = "1.0.0",
+                    environment = "development"
+                },
+                user = new
+                {
+                    id = "user_789",
+                    profile = new
+                    {
+                        name = "Jane Smith",
+                        email = "jane@example.com",
+                        preferences = new
+                        {
+                            theme = "dark",
+                            notifications = true,
+                            language = "en-US"
+                        }
+                    },
+                    permissions = new[] { "read", "write", "admin" }
+                },
+                session = new
+                {
+                    id = "sess_abc123",
+                    start_time = DateTime.UtcNow.AddMinutes(-30).ToString("O"),
+                    current_time = DateTime.UtcNow.ToString("O"),
+                    duration_minutes = 30,
+                    activities = new[]
+                    {
+                        new { action = "login", timestamp = DateTime.UtcNow.AddMinutes(-30).ToString("O") },
+                        new { action = "page_navigation", timestamp = DateTime.UtcNow.AddMinutes(-25).ToString("O") },
+                        new { action = "data_export", timestamp = DateTime.UtcNow.AddMinutes(-10).ToString("O") }
+                    }
+                },
+                performance = new
+                {
+                    load_time_ms = 245,
+                    memory_usage_mb = 156.7,
+                    cpu_usage_percent = 23.4
+                }
+            };
+
+            var jsonData = JsonSerializer.Serialize(complexData, new JsonSerializerOptions { WriteIndented = true });
+            lastStructuredData = jsonData;
+            
+            await LogJsonInterop.Log(jsonData, "structured-data");
+        }
+        finally
+        {
+            isLogging = false;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        realTimeTimer?.Dispose();
     }
 }

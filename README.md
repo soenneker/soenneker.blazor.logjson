@@ -1,6 +1,7 @@
 [![](https://img.shields.io/nuget/v/Soenneker.Blazor.LogJson.svg?style=for-the-badge)](https://www.nuget.org/packages/Soenneker.Blazor.LogJson/)
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.blazor.logjson/publish-package.yml?style=for-the-badge)](https://github.com/soenneker/soenneker.blazor.logjson/actions/workflows/publish-package.yml)
 [![](https://img.shields.io/nuget/dt/Soenneker.Blazor.LogJson.svg?style=for-the-badge)](https://www.nuget.org/packages/Soenneker.Blazor.LogJson/)
+[![](https://img.shields.io/badge/Demo-Live-blueviolet?style=for-the-badge&logo=github)](https://soenneker.github.io/soenneker.blazor.logjson/)
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Blazor.LogJson
 ### A Blazor interop library that logs JSON (like HTTP requests/responses) within the browser
