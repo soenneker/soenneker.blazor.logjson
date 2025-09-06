@@ -1,4 +1,4 @@
-﻿using Microsoft.JSInterop;
+using Microsoft.JSInterop;
 using Soenneker.Blazor.LogJson.Abstract;
 using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
 using Soenneker.Extensions.Task;
@@ -28,7 +28,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
         _initializer = new AsyncSingleton(async (token, _) =>
         {
-            await _resourceLoader.ImportModuleAndWaitUntilAvailable(ModulePath, ModuleIdentifier, 100, token).NoSync();
+            await _resourceLoader.ImportModuleAndWaitUntilAvailable(ModulePath, ModuleIdentifier, 100, token);
 
             return new object();
         });
@@ -54,9 +54,9 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
     private async ValueTask LogObjectInternal(object? value, string group, string logLevel, CancellationToken cancellationToken)
     {
-        await _initializer.Init(cancellationToken).NoSync();
+        await _initializer.Init(cancellationToken);
         // NOTE: We pass the object, not a string. The JS above handles non-strings cleanly.
-        await _jsRuntime.InvokeVoidAsync($"{ModuleIdentifier}.logJson", cancellationToken, value, group, logLevel).NoSync();
+        await _jsRuntime.InvokeVoidAsync($"{ModuleIdentifier}.logJson", cancellationToken, value, group, logLevel);
     }
 
     public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
@@ -67,27 +67,27 @@ public sealed class LogJsonInterop : ILogJsonInterop
     public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null,
         CancellationToken cancellationToken = default)
     {
-        var contentString = httpContent is not null ? await httpContent.ReadAsStringAsync(cancellationToken).NoSync() : null;
+        var contentString = httpContent is not null ? await httpContent.ReadAsStringAsync(cancellationToken) : null;
 
         var group = httpMethod is not null ? $"Request: {httpMethod} {requestUri}" : $"Request: {requestUri}";
 
-        await LogObjectInternal(contentString, group, "log", cancellationToken: cancellationToken).NoSync();
+        await LogObjectInternal(contentString, group, "log", cancellationToken: cancellationToken);
     }
 
     public async ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        var contentString = await response.Content.ReadAsStringAsync(cancellationToken).NoSync();
+        var contentString = await response.Content.ReadAsStringAsync(cancellationToken);
 
         var group = response.RequestMessage is not null
             ? $"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} ({response.StatusCode})"
             : $"Response: ({response.StatusCode})";
 
-        await LogObjectInternal(contentString, group, "log", cancellationToken: cancellationToken).NoSync();
+        await LogObjectInternal(contentString, group, "log", cancellationToken: cancellationToken);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _resourceLoader.DisposeModule(ModulePath).NoSync();
-        await _initializer.DisposeAsync().NoSync();
+        await _resourceLoader.DisposeModule(ModulePath);
+        await _initializer.DisposeAsync();
     }
 }
