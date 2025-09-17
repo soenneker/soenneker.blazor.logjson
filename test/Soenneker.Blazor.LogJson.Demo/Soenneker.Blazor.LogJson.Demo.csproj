@@ -1,23 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <Platforms>AnyCPU</Platforms>
         <NoWarn>$(NoWarn);1591</NoWarn>
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    <UserSecretsId>eaeb9d7d-5642-461e-a0e9-22595f246e68</UserSecretsId></PropertyGroup>
-
-    <ItemGroup>
-      <Compile Remove="NewFolder\**" />
-      <Content Remove="NewFolder\**" />
-      <EmbeddedResource Remove="NewFolder\**" />
-      <None Remove="NewFolder\**" />
-    </ItemGroup>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <UserSecretsId>eaeb9d7d-5642-461e-a0e9-22595f246e68</UserSecretsId>
+    </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.9" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="9.0.9"
+                          PrivateAssets="all" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.2" />
         <PackageReference Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
         <PackageReference Include="Soenneker.Utils.AutoBogus" Version="3.0.803" />
