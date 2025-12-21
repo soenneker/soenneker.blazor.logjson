@@ -1,7 +1,7 @@
 using Microsoft.JSInterop;
 using Soenneker.Blazor.LogJson.Abstract;
 using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
-using Soenneker.Utils.AsyncSingleton;
+using Soenneker.Asyncs.Initializers;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
@@ -12,23 +12,21 @@ namespace Soenneker.Blazor.LogJson;
 ///<inheritdoc cref="ILogJsonInterop"/>
 public sealed class LogJsonInterop : ILogJsonInterop
 {
-    private const string ModulePath = "Soenneker.Blazor.LogJson/js/logjsoninterop.js";
-    private const string ModuleIdentifier = "LogJsonInterop";
+    private const string _modulePath = "Soenneker.Blazor.LogJson/js/logjsoninterop.js";
+    private const string _moduleIdentifier = "LogJsonInterop";
 
     private readonly IJSRuntime _jsRuntime;
     private readonly IResourceLoader _resourceLoader;
-    private readonly AsyncSingleton _initializer;
+    private readonly AsyncInitializer _initializer;
 
     public LogJsonInterop(IJSRuntime jSRuntime, IResourceLoader resourceLoader)
     {
         _jsRuntime = jSRuntime;
         _resourceLoader = resourceLoader;
 
-        _initializer = new AsyncSingleton(async (token, _) =>
+        _initializer = new AsyncInitializer(async token =>
         {
-            await _resourceLoader.ImportModuleAndWaitUntilAvailable(ModulePath, ModuleIdentifier, 100, token);
-
-            return new object();
+            await _resourceLoader.ImportModuleAndWaitUntilAvailable(_modulePath, _moduleIdentifier, 100, token);
         });
     }
 
@@ -54,7 +52,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
     {
         await _initializer.Init(cancellationToken);
         // NOTE: We pass the object, not a string. The JS above handles non-strings cleanly.
-        await _jsRuntime.InvokeVoidAsync($"{ModuleIdentifier}.logJson", cancellationToken, value, group, logLevel);
+        await _jsRuntime.InvokeVoidAsync($"{_moduleIdentifier}.logJson", cancellationToken, value, group, logLevel);
     }
 
     public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
@@ -85,7 +83,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
     public async ValueTask DisposeAsync()
     {
-        await _resourceLoader.DisposeModule(ModulePath);
+        await _resourceLoader.DisposeModule(_modulePath);
         await _initializer.DisposeAsync();
     }
 }
