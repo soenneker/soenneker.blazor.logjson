@@ -103,7 +103,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
         if (s.Length <= _maxBodyChars)
             return s;
 
-        return string.Concat(s.AsSpan(0, _maxBodyChars), "… (truncated)");
+        return string.Concat(s.AsSpan(0, _maxBodyChars), "â€¦ (truncated)");
     }
 
 
