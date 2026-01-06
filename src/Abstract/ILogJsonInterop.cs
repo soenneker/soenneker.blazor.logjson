@@ -8,7 +8,7 @@ namespace Soenneker.Blazor.LogJson.Abstract;
 /// <summary>
 /// A Blazor interop library that logs JSON (like HTTP requests/responses) within the browser
 /// </summary>
-public interface ILogJsonInterop : IAsyncDisposable
+public interface ILogJsonInterop : IAsyncDisposable, IDisposable
 {
     ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default);
 
