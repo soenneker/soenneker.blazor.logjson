@@ -17,7 +17,7 @@
                           PrivateAssets="all" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
         <PackageReference Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
-        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="4.0.842" />
+        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="4.0.844" />
         <PackageReference Include="Soenneker.Utils.Json" Version="4.0.2395" />
     </ItemGroup>
 
