@@ -2,6 +2,8 @@ using Microsoft.JSInterop;
 using Soenneker.Asyncs.Initializers;
 using Soenneker.Blazor.LogJson.Abstract;
 using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
+using Soenneker.Extensions.CancellationTokens;
+using Soenneker.Utils.CancellationScopes;
 using System;
 using System.Net.Http;
 using System.Text.Json;
@@ -25,6 +27,8 @@ public sealed class LogJsonInterop : ILogJsonInterop
     private const int _maxBodyBytes = 64 * 1024;
     private const int _maxBodyChars = 64 * 1024;
 
+    private readonly CancellationScope _cancellationScope = new();
+
     public LogJsonInterop(IJSRuntime jSRuntime, IResourceLoader resourceLoader)
     {
         _jsRuntime = jSRuntime;
@@ -39,19 +43,24 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
     public ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default)
     {
-        if (value is null)
-            return LogObjectInternal(null, group, level, cancellationToken);
+        var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
-        switch (value)
+        using (source)
         {
-            case string s:
-                return LogObjectInternal(s, group, level, cancellationToken);
-            case JsonElement je:
-                return LogObjectInternal(je.GetRawText(), group, level, cancellationToken);
-            case JsonDocument jd:
-                return LogObjectInternal(jd.RootElement.GetRawText(), group, level, cancellationToken);
-            default:
-                return LogObjectInternal(value, group, level, cancellationToken);
+            if (value is null)
+                return LogObjectInternal(null, group, level, linked);
+
+            switch (value)
+            {
+                case string s:
+                    return LogObjectInternal(s, group, level, linked);
+                case JsonElement je:
+                    return LogObjectInternal(je.GetRawText(), group, level, linked);
+                case JsonDocument jd:
+                    return LogObjectInternal(jd.RootElement.GetRawText(), group, level, linked);
+                default:
+                    return LogObjectInternal(value, group, level, linked);
+            }
         }
     }
 
@@ -70,25 +79,35 @@ public sealed class LogJsonInterop : ILogJsonInterop
     public async ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null,
         CancellationToken cancellationToken = default)
     {
-        string? contentString = null;
+        var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
-        if (httpContent is not null)
-            contentString = await ReadBodyStringSafe(httpContent, cancellationToken);
+        using (source)
+        {
+            string? contentString = null;
 
-        var group = httpMethod is null ? $"Request: {requestUri}" : $"Request: {httpMethod} {requestUri}";
+            if (httpContent is not null)
+                contentString = await ReadBodyStringSafe(httpContent, linked);
 
-        await LogObjectInternal(contentString, group, "log", cancellationToken);
+            var group = httpMethod is null ? $"Request: {requestUri}" : $"Request: {httpMethod} {requestUri}";
+
+            await LogObjectInternal(contentString, group, "log", linked);
+        }
     }
 
     public async ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
-        var contentString = await ReadBodyStringSafe(response.Content, cancellationToken);
+        var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
-        var group = response.RequestMessage is not null
-            ? $"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} ({response.StatusCode})"
-            : $"Response: ({response.StatusCode})";
+        using (source)
+        {
+            var contentString = await ReadBodyStringSafe(response.Content, linked);
 
-        await LogObjectInternal(contentString, group, "log", cancellationToken);
+            var group = response.RequestMessage is not null
+                ? $"Response: {response.RequestMessage.Method} {response.RequestMessage.RequestUri} ({response.StatusCode})"
+                : $"Response: ({response.StatusCode})";
+
+            await LogObjectInternal(contentString, group, "log", linked);
+        }
     }
 
     private static async ValueTask<string> ReadBodyStringSafe(HttpContent content, CancellationToken ct)
@@ -111,11 +130,13 @@ public sealed class LogJsonInterop : ILogJsonInterop
     {
         await _resourceLoader.DisposeModule(_modulePath);
         await _initializer.DisposeAsync();
+        await _cancellationScope.DisposeAsync();
     }
 
     public void Dispose()
     {
         _resourceLoader.DisposeModule(_modulePath);
         _initializer.Dispose();
+        _cancellationScope.DisposeAsync().GetAwaiter().GetResult();
     }
 }
