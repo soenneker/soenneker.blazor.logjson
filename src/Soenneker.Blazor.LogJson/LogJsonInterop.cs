@@ -36,9 +36,9 @@ public sealed class LogJsonInterop : ILogJsonInterop
         _initializer = new AsyncInitializer(Initialize);
     }
 
-    private ValueTask Initialize(CancellationToken token)
+    private async ValueTask Initialize(CancellationToken token)
     {
-        return _resourceLoader.ImportModuleAndWaitUntilAvailable(_modulePath, _moduleIdentifier, 100, token);
+        _ = await _resourceLoader.ImportModule(_modulePath, token);
     }
 
     public ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default)
