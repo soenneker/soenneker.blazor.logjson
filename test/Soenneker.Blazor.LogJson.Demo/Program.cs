@@ -1,3 +1,4 @@
+using Soenneker.Quark;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,8 +33,9 @@ public class Program
             });
 
             builder.Services.AddLogJsonInteropAsScoped();
+            builder.Services.AddQuarkSuiteAsScoped();
 
-            var host = builder.Build();
+            WebAssemblyHost host = builder.Build();
 
             var jsRuntime = (IJSRuntime)host.Services.GetService(typeof(IJSRuntime))!;
 
@@ -78,3 +80,5 @@ public class Program
         Log.Logger = loggerConfig.CreateLogger();
     }
 }
+
+
