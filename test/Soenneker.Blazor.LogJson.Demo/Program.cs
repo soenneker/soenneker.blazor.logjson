@@ -11,6 +11,7 @@ using Serilog;
 using Serilog.Debugging;
 using Serilog.Events;
 using Soenneker.Blazor.LogJson.Registrars;
+using Soenneker.Quark.Gen.Lucide.Generated;
 
 namespace Soenneker.Blazor.LogJson.Demo;
 
@@ -34,6 +35,7 @@ public class Program
 
             builder.Services.AddLogJsonInteropAsScoped();
             builder.Services.AddQuarkSuiteAsScoped();
+            builder.Services.AddLucideIconsAsScoped();
 
             WebAssemblyHost host = builder.Build();
 
