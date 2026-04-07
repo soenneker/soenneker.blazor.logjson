@@ -1,7 +1,6 @@
 using Microsoft.JSInterop;
-using Soenneker.Asyncs.Initializers;
 using Soenneker.Blazor.LogJson.Abstract;
-using Soenneker.Blazor.Utils.ResourceLoader.Abstract;
+using Soenneker.Blazor.Utils.ModuleImport.Abstract;
 using Soenneker.Extensions.CancellationTokens;
 using Soenneker.Utils.CancellationScopes;
 using System;
@@ -15,30 +14,17 @@ namespace Soenneker.Blazor.LogJson;
 ///<inheritdoc cref="ILogJsonInterop"/>
 public sealed class LogJsonInterop : ILogJsonInterop
 {
-    private const string _modulePath = "Soenneker.Blazor.LogJson/js/logjsoninterop.js";
-    private const string _moduleIdentifier = "LogJsonInterop";
-
-    private readonly IJSRuntime _jsRuntime;
-    private readonly IResourceLoader _resourceLoader;
-    private readonly AsyncInitializer _initializer;
-
-    private const string _logJsonIdentifier = _moduleIdentifier + ".logJson";
+    private const string _modulePath = "/_content/Soenneker.Blazor.LogJson/js/logjsoninterop.js";
 
     private const int _maxBodyBytes = 64 * 1024;
     private const int _maxBodyChars = 64 * 1024;
 
+    private readonly IModuleImportUtil _moduleImportUtil;
     private readonly CancellationScope _cancellationScope = new();
 
-    public LogJsonInterop(IJSRuntime jSRuntime, IResourceLoader resourceLoader)
+    public LogJsonInterop(IModuleImportUtil moduleImportUtil)
     {
-        _jsRuntime = jSRuntime;
-        _resourceLoader = resourceLoader;
-        _initializer = new AsyncInitializer(Initialize);
-    }
-
-    private async ValueTask Initialize(CancellationToken token)
-    {
-        _ = await _resourceLoader.ImportModule(_modulePath, token);
+        _moduleImportUtil = moduleImportUtil;
     }
 
     public ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default)
@@ -66,8 +52,8 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
     private async ValueTask LogObjectInternal(object? value, string group, string logLevel, CancellationToken cancellationToken)
     {
-        await _initializer.Init(cancellationToken);
-        await _jsRuntime.InvokeVoidAsync(_logJsonIdentifier, cancellationToken, value, group, logLevel);
+        IJSObjectReference module = await _moduleImportUtil.GetContentModuleReference(_modulePath, cancellationToken);
+        await module.InvokeVoidAsync("logJson", cancellationToken, value, group, logLevel);
     }
 
     public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
@@ -128,15 +114,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
     public async ValueTask DisposeAsync()
     {
-        await _resourceLoader.DisposeModule(_modulePath);
-        await _initializer.DisposeAsync();
+        await _moduleImportUtil.DisposeContentModule(_modulePath);
         await _cancellationScope.DisposeAsync();
-    }
-
-    public void Dispose()
-    {
-        _resourceLoader.DisposeModule(_modulePath);
-        _initializer.Dispose();
-        _cancellationScope.DisposeAsync().GetAwaiter().GetResult();
     }
 }

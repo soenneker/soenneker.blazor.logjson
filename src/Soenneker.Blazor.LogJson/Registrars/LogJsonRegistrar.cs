@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Soenneker.Blazor.LogJson.Abstract;
-using Soenneker.Blazor.Utils.ResourceLoader.Registrars;
+using Soenneker.Blazor.Utils.ModuleImport.Registrars;
 
 namespace Soenneker.Blazor.LogJson.Registrars;
 
@@ -12,7 +12,7 @@ public static class LogJsonRegistrar
 {
     public static IServiceCollection AddLogJsonInteropAsScoped(this IServiceCollection services)
     {
-        services.AddResourceLoaderAsScoped().TryAddScoped<ILogJsonInterop, LogJsonInterop>();
+        services.AddModuleImportUtilAsScoped().TryAddScoped<ILogJsonInterop, LogJsonInterop>();
 
         return services;
     }
