@@ -14,7 +14,7 @@ namespace Soenneker.Blazor.LogJson;
 ///<inheritdoc cref="ILogJsonInterop"/>
 public sealed class LogJsonInterop : ILogJsonInterop
 {
-    private const string _modulePath = "/_content/Soenneker.Blazor.LogJson/js/logjsoninterop.js";
+    private const string _modulePath = "_content/Soenneker.Blazor.LogJson/js/logjsoninterop.js";
 
     private const int _maxBodyBytes = 64 * 1024;
     private const int _maxBodyChars = 64 * 1024;
