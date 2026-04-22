@@ -1,20 +1,19 @@
 using Soenneker.Blazor.LogJson.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Blazor.LogJson.Tests;
 
-[Collection("Collection")]
-public class FilePondInteropTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public class FilePondInteropTests : HostedUnitTest
 {
     private readonly ILogJsonInterop _util;
 
-    public FilePondInteropTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public FilePondInteropTests(Host host) : base(host)
     {
         _util = Resolve<ILogJsonInterop>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
