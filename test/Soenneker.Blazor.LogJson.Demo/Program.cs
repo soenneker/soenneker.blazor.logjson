@@ -37,7 +37,7 @@ public class Program
             builder.Services.AddQuarkSuiteAsScoped();
             builder.Services.AddLucideIconsAsScoped();
 
-            WebAssemblyHost host = builder.Build();
+            var host = builder.Build();
 
             var jsRuntime = (IJSRuntime)host.Services.GetService(typeof(IJSRuntime))!;
 
