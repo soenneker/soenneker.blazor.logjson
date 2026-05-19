@@ -3,7 +3,7 @@
 @using System.Threading
 @using Soenneker.Blazor.LogJson.Abstract
 @inject ILogJsonInterop LogJsonInterop
-@implements IDisposable
+@implements IAsyncDisposable
 
 <Div Space="Space.Y.Is6">
     <DemoPanel Title="Grouped logging" Description="Multiple related log lines under the same label.">
@@ -77,12 +77,11 @@
         }
     }
 
-    private Task StartRealTimeLogging()
+    private async Task StartRealTimeLogging()
     {
         if (_isRealTimeActive)
         {
-            _realTimeTimer?.Dispose();
-            _realTimeTimer = null;
+            await DisposeRealTimeTimer();
             _isRealTimeActive = false;
             StateHasChanged();
         }
@@ -116,7 +115,6 @@
             }, null, TimeSpan.Zero, TimeSpan.FromSeconds(2));
         }
 
-        return Task.CompletedTask;
     }
 
     private async Task LogStructuredData()
@@ -147,8 +145,19 @@
         }
     }
 
-    public void Dispose()
+    private async ValueTask DisposeRealTimeTimer()
     {
-        _realTimeTimer?.Dispose();
+        Timer? timer = _realTimeTimer;
+        _realTimeTimer = null;
+
+        if (timer is not null)
+        {
+            await timer.DisposeAsync();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeRealTimeTimer();
     }
 }
