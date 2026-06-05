@@ -10,6 +10,15 @@ namespace Soenneker.Blazor.LogJson.Abstract;
 /// </summary>
 public interface ILogJsonInterop : IAsyncDisposable
 {
+    /// <summary>
+    /// Executes the log operation.
+    /// </summary>
+    /// <typeparam name="T">The T type.</typeparam>
+    /// <param name="value">The value.</param>
+    /// <param name="group">The group.</param>
+    /// <param name="level">The level.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default);
 
     /// <summary>
