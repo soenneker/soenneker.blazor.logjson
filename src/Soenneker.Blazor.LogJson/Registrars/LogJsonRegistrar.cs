@@ -11,10 +11,10 @@ namespace Soenneker.Blazor.LogJson.Registrars;
 public static class LogJsonRegistrar
 {
     /// <summary>
-    /// Adds log json interop as scoped.
+    /// Registers Log JSON Interop with a scoped lifetime.
     /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The result of the operation.</returns>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddLogJsonInteropAsScoped(this IServiceCollection services)
     {
         services.AddModuleImportUtilAsScoped().TryAddScoped<ILogJsonInterop, LogJsonInterop>();

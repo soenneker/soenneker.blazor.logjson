@@ -11,34 +11,39 @@ namespace Soenneker.Blazor.LogJson.Abstract;
 public interface ILogJsonInterop : IAsyncDisposable
 {
     /// <summary>
-    /// Executes the log operation.
+    /// Serializes a value and writes it to the selected browser-console group and level.
     /// </summary>
-    /// <typeparam name="T">The T type.</typeparam>
-    /// <param name="value">The value.</param>
-    /// <param name="group">The group.</param>
-    /// <param name="level">The level.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <typeparam name="T">Type of value handled by the log json.</typeparam>
+    /// <param name="value">Value to serialize and write to the browser console.</param>
+    /// <param name="group">Group to target.</param>
+    /// <param name="level">Logging level used for the console entry.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the log operation is complete.</returns>
     ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs an HTTP request with its URI, content, and method.
     /// </summary>
+    /// <param name="request">request that defines the request to send.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the log request operation is complete.</returns>
     ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs an HTTP request with its URI, content, and method.
     /// </summary>
-    /// <param name="requestUri">The URI of the HTTP request.</param>
+    /// <param name="requestUri">request URI that defines the request to send.</param>
     /// <param name="httpContent">The content of the HTTP request. Can be null.</param>
     /// <param name="httpMethod">The method of the HTTP request (e.g., GET, POST). Can be null.</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the log request operation is complete.</returns>
     ValueTask LogRequest(string requestUri, HttpContent? httpContent = null, HttpMethod? httpMethod = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs an HTTP response.
     /// </summary>
-    /// <param name="response">The HTTP response to log.</param>
-    /// <param name="cancellationToken"></param>
+    /// <param name="response">response returned by the upstream operation.</param>
+    /// <param name="cancellationToken">Token used to cancel the operation.</param>
+    /// <returns>A task that completes when the log response operation is complete.</returns>
     ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default);
 }
