@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Soenneker.Blazor.LogJson;
 
-///<inheritdoc cref="ILogJsonInterop"/>
+/// <inheritdoc cref="ILogJsonInterop"/>
 public sealed class LogJsonInterop : ILogJsonInterop
 {
     private const string _modulePath = "_content/Soenneker.Blazor.LogJson/js/logjsoninterop.js";
