@@ -4,51 +4,66 @@
 [![](https://img.shields.io/badge/Demo-Live-blueviolet?style=for-the-badge&logo=github)](https://soenneker.github.io/soenneker.blazor.logjson/)
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.blazor.logjson/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.blazor.logjson/actions/workflows/codeql.yml)
 
-# ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Blazor.LogJson
-### A Blazor interop library that logs JSON (like HTTP requests/responses) within the browser
+# Soenneker.Blazor.LogJson
 
-Supports log levels, grouping, and all in a nice readable format:
+A Blazor interop utility for writing structured values and bounded HTTP bodies to grouped entries in the browser developer console.
 
-![](https://github.com/soenneker/soenneker.blazor.logjson/raw/main/READMEimg.png)
+![Grouped JSON in the browser console](https://github.com/soenneker/soenneker.blazor.logjson/raw/main/READMEimg.png)
 
 ## Installation
 
-```
+```bash
 dotnet add package Soenneker.Blazor.LogJson
 ```
 
-1. Register the interop within DI (`Program.cs`)
-
 ```csharp
-public static async Task Main(string[] args)
-{
-    ...
-    builder.Services.AddLogJsonInteropAsScoped();
-}
+using Soenneker.Blazor.LogJson.Registrars;
+
+builder.Services.AddLogJsonInteropAsScoped();
 ```
 
-2. Inject `ILogJsonInterop` within pages/components
+Inject the service into a component:
 
-```csharp
+```razor
 @using Soenneker.Blazor.LogJson.Abstract
-@inject ILogJsonInterop LogJsonInterop
+@inject ILogJsonInterop JsonLog
 ```
 
-### Logging some JSON 
-```csharp
-var json = "{ 'this-is', 'someJson' }"
-await LogJsonInterop.LogJson(json);
-```
-
-### Logging requests
+## Log a value
 
 ```csharp
-HttpContent content = new StringContent("{ 'this-is', 'someJson' }");
-await LogJsonInterop.LogRequest($"https://google.com", content);
+await JsonLog.Log(
+    new
+    {
+        orderId = order.Id,
+        status = order.Status
+    },
+    group: "Order updated",
+    level: "info");
 ```
 
-### Logging responses
+The value is transferred through Blazor's normal JavaScript serializer. A string beginning with `{` or `[` is parsed as JSON when valid; other strings are logged unchanged. `level` selects a browser `console` function such as `log`, `info`, `warn`, or `error`; an unknown or non-callable member falls back to `console.log`.
+
+## Log an HTTP request or response
+
 ```csharp
-HttpResponseMessage response = await client.PostAsync(requestUri, content);
-await LogJsonInterop.LogResponse(response);
+using var request = new HttpRequestMessage(HttpMethod.Post, "api/orders")
+{
+    Content = JsonContent.Create(new { sku = "ABC-123", quantity = 2 })
+};
+
+await JsonLog.LogRequest(request);
+
+using HttpResponseMessage response = await Http.SendAsync(request);
+await JsonLog.LogResponse(response);
 ```
+
+Request groups include the method and URI. Response groups include the status plus the originating method and URI when available. These methods log the body only; they do not log request or response headers.
+
+Bodies are buffered up to 64 KiB. A body with a larger declared or observed size is replaced with a skipped-body message, and text over 64K characters is truncated. Logging may buffer otherwise streaming `HttpContent`, so use these helpers for diagnostics rather than high-throughput production paths.
+
+## Sensitive data
+
+Browser-console output is visible to anyone with access to the running browser and may be captured by browser tooling. Do not log authorization data, cookies, access tokens, personal information, payment details, or URLs/query strings containing secrets. Prefer explicitly shaped diagnostic objects over logging entire domain or transport objects.
+
+Interop, serialization, content-read, and cancellation failures are returned to the caller. Await logging when you need to observe those failures; isolate it deliberately if diagnostic logging must never affect the application operation.

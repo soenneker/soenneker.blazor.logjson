@@ -18,7 +18,8 @@ export function logJson(input, group, level = "log") {
 
     if (hasGroup) console.groupCollapsed(group);
 
-    const fn = console[level] ?? console.log;
+    const candidate = console[level];
+    const fn = typeof candidate === "function" ? candidate : console.log;
     fn.call(console, obj);
 
     if (hasGroup) console.groupEnd();

@@ -27,25 +27,34 @@ public sealed class LogJsonInterop : ILogJsonInterop
         _moduleImportUtil = moduleImportUtil;
     }
 
-    public ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default)
+    public async ValueTask Log<T>(T? value, string group, string level = "log", CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(group);
+
         var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
         using (source)
         {
             if (value is null)
-                return LogObjectInternal(null, group, level, linked);
+            {
+                await LogObjectInternal(null, group, level, linked);
+                return;
+            }
 
             switch (value)
             {
                 case string s:
-                    return LogObjectInternal(s, group, level, linked);
+                    await LogObjectInternal(s, group, level, linked);
+                    break;
                 case JsonElement je:
-                    return LogObjectInternal(je.GetRawText(), group, level, linked);
+                    await LogObjectInternal(je.GetRawText(), group, level, linked);
+                    break;
                 case JsonDocument jd:
-                    return LogObjectInternal(jd.RootElement.GetRawText(), group, level, linked);
+                    await LogObjectInternal(jd.RootElement.GetRawText(), group, level, linked);
+                    break;
                 default:
-                    return LogObjectInternal(value, group, level, linked);
+                    await LogObjectInternal(value, group, level, linked);
+                    break;
             }
         }
     }
@@ -58,6 +67,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
     public ValueTask LogRequest(HttpRequestMessage request, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(request);
         var uri = request.RequestUri is null ? "Uri not set on request object" : request.RequestUri.ToString();
         return LogRequest(uri, request.Content, request.Method, cancellationToken);
     }
@@ -82,6 +92,7 @@ public sealed class LogJsonInterop : ILogJsonInterop
 
     public async ValueTask LogResponse(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(response);
         var linked = _cancellationScope.CancellationToken.Link(cancellationToken, out var source);
 
         using (source)
@@ -102,6 +113,15 @@ public sealed class LogJsonInterop : ILogJsonInterop
         var lenBytes = content.Headers.ContentLength;
         if (lenBytes is > _maxBodyBytes)
             return $"(body skipped; Content-Length={lenBytes.Value:n0} bytes)";
+
+        try
+        {
+            await content.LoadIntoBufferAsync(_maxBodyBytes, ct);
+        }
+        catch (HttpRequestException)
+        {
+            return $"(body skipped; exceeded {_maxBodyBytes:n0} bytes or could not be buffered)";
+        }
 
         var s = await content.ReadAsStringAsync(ct);
 
