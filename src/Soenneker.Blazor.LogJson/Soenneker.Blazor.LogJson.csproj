@@ -42,7 +42,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Soenneker.Blazor.Utils.ModuleImport" Version="4.0.1889" />
-        <PackageReference Include="Soenneker.Utils.CancellationScopes" Version="4.0.54" />
+        <PackageReference Include="Soenneker.Blazor.Utils.ModuleImport" Version="4.0.1893" />
     </ItemGroup>
 </Project>

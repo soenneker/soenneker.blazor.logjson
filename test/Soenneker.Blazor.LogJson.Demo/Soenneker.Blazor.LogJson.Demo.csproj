@@ -11,22 +11,22 @@
 
     <ItemGroup>
 <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12" PrivateAssets="all" />
-        <PackageReference Include="Soenneker.Quark.Gen.Lucide" Version="4.0.243">
+        <PackageReference Include="Soenneker.Quark.Gen.Lucide" Version="4.0.246">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Soenneker.Quark.Gen.Tailwind.Manifest" Version="4.0.230">
+        <PackageReference Include="Soenneker.Quark.Gen.Tailwind.Manifest" Version="4.0.234">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
         <PackageReference Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
-        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="4.0.953" />
-        <PackageReference Include="Soenneker.Quark.Gen.Tailwind" Version="4.0.247">
+        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="4.0.960" />
+        <PackageReference Include="Soenneker.Quark.Gen.Tailwind" Version="4.0.251">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Soenneker.Quark.Suite" Version="4.0.1361" />
+        <PackageReference Include="Soenneker.Quark.Suite" Version="4.0.1372" />
     </ItemGroup>
 
     <ItemGroup>
