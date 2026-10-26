@@ -22,8 +22,8 @@
         </PackageReference>
         <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
         <PackageReference Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
-        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="11.0.994" />
-        <PackageReference Include="Soenneker.Quark.Gen.Tailwind" Version="11.0.317">
+        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="11.0.995" />
+        <PackageReference Include="Soenneker.Quark.Gen.Tailwind" Version="11.0.318">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
