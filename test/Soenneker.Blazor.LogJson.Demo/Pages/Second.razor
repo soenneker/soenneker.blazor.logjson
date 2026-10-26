@@ -59,7 +59,6 @@
     private async Task LogGroupedData()
     {
         _isLogging = true;
-        StateHasChanged();
 
         try
         {
@@ -73,7 +72,6 @@
         finally
         {
             _isLogging = false;
-            StateHasChanged();
         }
     }
 
@@ -83,13 +81,11 @@
         {
             await DisposeRealTimeTimer();
             _isRealTimeActive = false;
-            StateHasChanged();
         }
         else
         {
             _isRealTimeActive = true;
             _realTimeLogCount = 0;
-            StateHasChanged();
 
             _realTimeTimer = new Timer(async _ =>
             {
@@ -120,7 +116,6 @@
     private async Task LogStructuredData()
     {
         _isLogging = true;
-        StateHasChanged();
 
         try
         {
@@ -141,7 +136,6 @@
         finally
         {
             _isLogging = false;
-            StateHasChanged();
         }
     }
 

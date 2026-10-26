@@ -33,7 +33,6 @@
     private async Task LogString()
     {
         _isLogging = true;
-        StateHasChanged();
 
         try
         {
@@ -45,7 +44,6 @@
         finally
         {
             _isLogging = false;
-            StateHasChanged();
         }
     }
 }
