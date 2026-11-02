@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <Platforms>AnyCPU</Platforms>
         <NoWarn>$(NoWarn);1591</NoWarn>
+        <WebMinifierFolders>wwwroot/js</WebMinifierFolders>
+        <WebMinifierCssEnabled>false</WebMinifierCssEnabled>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -44,5 +46,8 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.Blazor.Utils.ModuleImport" Version="11.0.1938" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Soenneker.Gen.Web.Minifier" Version="11.0.43" PrivateAssets="all" />
     </ItemGroup>
 </Project>
