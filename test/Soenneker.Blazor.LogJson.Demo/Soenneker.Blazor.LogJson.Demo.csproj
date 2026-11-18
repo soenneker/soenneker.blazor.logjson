@@ -12,7 +12,7 @@
 
     <ItemGroup>
 <PackageReference Include="Microsoft.AspNetCore.Components.Gateway" Version="11.0.0" PrivateAssets="all" />
-        <PackageReference Include="Soenneker.Quark.Gen.Lucide" Version="11.0.329">
+        <PackageReference Include="Soenneker.Quark.Gen.Lucide" Version="11.0.334">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -22,12 +22,12 @@
         </PackageReference>
         <PackageReference Include="Serilog.Extensions.Logging" Version="11.0.0" />
         <PackageReference Include="Serilog.Sinks.BrowserConsole" Version="8.0.0" />
-        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="11.0.1013" />
-        <PackageReference Include="Soenneker.Quark.Gen.Tailwind" Version="11.0.353">
+        <PackageReference Include="Soenneker.Utils.AutoBogus" Version="11.0.1014" />
+        <PackageReference Include="Soenneker.Quark.Gen.Tailwind" Version="11.0.356">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Soenneker.Quark.Suite" Version="11.0.1742" />
+        <PackageReference Include="Soenneker.Quark.Suite" Version="11.0.1745" />
     </ItemGroup>
 
     <ItemGroup>
